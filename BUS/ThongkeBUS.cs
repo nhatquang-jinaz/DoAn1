@@ -23,7 +23,11 @@ namespace DoAn1.BUS
                 if (tuKhoa.Length > 50) return "Từ khóa tìm kiếm quá dài (tối đa 50 ký tự).";
                 if (tuKhoa.Contains("'") || tuKhoa.Contains("-")) return "Từ khóa chứa ký tự không hợp lệ.";
             }
-            //if (string.IsNullOrWhiteSpace(tuKhoa)) return "Vui lòng nhập từ khóa tìm kiếm";
+            //kiểm tra nếu k có từ khóa & k chọn tiêu chí lọc
+            if (string.IsNullOrWhiteSpace(tuKhoa) && string.IsNullOrWhiteSpace(trangThai) && string.IsNullOrWhiteSpace(doUuTien))
+            {
+                return "Vui lòng chọn tiêu chí lọc hoặc thêm từ khóa!";
+            }
             //kiểm tra Trạng thái
             if (!string.IsNullOrWhiteSpace(trangThai))
             {
