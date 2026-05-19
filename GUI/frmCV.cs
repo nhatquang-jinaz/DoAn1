@@ -50,6 +50,7 @@ namespace DoAn1
                     dgvCV.Columns["nguoiTao"].HeaderText = "Người tạo";
                     dgvCV.Columns["ngayTao"].HeaderText = "Ngày tạo";
                     dgvCV.Columns["ngayCapNhat"].HeaderText = "Ngày cập nhật";
+                    dgvCV.Columns["maNV"].HeaderText = "Người thực hiện";
                 }
             }
             catch (Exception ex)
@@ -127,7 +128,7 @@ namespace DoAn1
             if (kq == "SUCCESS")
             {
                 MessageBox.Show($"Đã thực hiện phân công {selectedNV.Count} nhân viên thành công!");
-
+                LoadGrid(cboChonduan.SelectedValue?.ToString());
                 //bỏ tích các mục sau khi xong
                 for (int i = 0; i < clbDSNV.Items.Count; i++)
                 {
@@ -237,6 +238,7 @@ namespace DoAn1
         private void btnLamMoi2_Click(object sender, EventArgs e)
         {
             ClearInputs();
+            cboChonduan.SelectedIndex = -1;
         }
 
         private void cboChonduan_TextChanged(object sender, EventArgs e)

@@ -19,7 +19,10 @@ namespace DoAn1.DAL
         {
             using (SqlConnection con = new SqlConnection(conString))
             {
-                string sql = "SELECT * FROM CongViec ORDER BY ngayTao DESC";
+                string sql = @"SELECT cv.*, pc.maNV 
+                       FROM CongViec cv 
+                       LEFT JOIN PhanCong pc ON cv.maCV = pc.maCV 
+                       ORDER BY cv.ngayTao DESC";
                 SqlDataAdapter da = new SqlDataAdapter(sql, con);
                 DataTable dt = new DataTable();
                 da.Fill(dt);
@@ -31,7 +34,10 @@ namespace DoAn1.DAL
         {
             using (SqlConnection con = new SqlConnection(conString))
             {
-                string sql = "SELECT * FROM CongViec WHERE maDA = @ma";
+                string sql = @"SELECT cv.*, pc.maNV
+                       FROM CongViec cv 
+                       LEFT JOIN PhanCong pc ON cv.maCV = pc.maCV 
+                       WHERE cv.maDA = @ma";
                 SqlDataAdapter da = new SqlDataAdapter(sql, con);
                 da.SelectCommand.Parameters.AddWithValue("@ma", maDA);
                 DataTable dt = new DataTable();
@@ -124,7 +130,10 @@ namespace DoAn1.DAL
         {
             using (SqlConnection con = new SqlConnection(conString))
             {
-                string sql = "SELECT * FROM CongViec WHERE maCV = @ma";
+                string sql = @"SELECT cv.*, pc.maNV 
+                       FROM CongViec cv 
+                       LEFT JOIN PhanCong pc ON cv.maCV = pc.maCV 
+                       WHERE cv.maCV = @ma";
                 SqlCommand cmd = new SqlCommand(sql, con);
                 cmd.Parameters.AddWithValue("@ma", maCV);
                 SqlDataAdapter da = new SqlDataAdapter(cmd);
