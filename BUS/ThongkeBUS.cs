@@ -15,34 +15,42 @@ namespace DoAn1.BUS
     {
         ThongkeDAL dal = new ThongkeDAL();
 
-        public string ValidateLoc(string tuKhoa, string trangThai, string doUuTien)
+        public string ValidateLoc(LocCongViecDTO loc)
         {
-            //kiểm tra từ khóa: Không cho phép ký tự lạ nguy hiểm hoặc quá dài
-            if (!string.IsNullOrWhiteSpace(tuKhoa))
+            if (!string.IsNullOrWhiteSpace(loc.TuKhoa))
             {
-                if (tuKhoa.Length > 50) return "Từ khóa tìm kiếm quá dài (tối đa 50 ký tự).";
-                if (tuKhoa.Contains("'") || tuKhoa.Contains("-")) return "Từ khóa chứa ký tự không hợp lệ.";
+                if (loc.TuKhoa.Length > 50) return "Từ khóa tìm kiếm quá dài (tối đa 50 ký tự).";
+                if (loc.TuKhoa.Contains("'") || loc.TuKhoa.Contains("-")) return "Từ khóa chứa ký tự không hợp lệ.";
             }
-            //kiểm tra nếu k có từ khóa & k chọn tiêu chí lọc
-            if (string.IsNullOrWhiteSpace(tuKhoa) && string.IsNullOrWhiteSpace(trangThai) && string.IsNullOrWhiteSpace(doUuTien))
+
+            if (string.IsNullOrWhiteSpace(loc.TuKhoa) && string.IsNullOrWhiteSpace(loc.TrangThai) && string.IsNullOrWhiteSpace(loc.DoUuTien))
             {
                 return "Vui lòng chọn tiêu chí lọc hoặc thêm từ khóa!";
             }
-            //kiểm tra Trạng thái
-            if (!string.IsNullOrWhiteSpace(trangThai))
+
+            if (!string.IsNullOrWhiteSpace(loc.TrangThai))
             {
                 string[] validTT = { "Chưa thực hiện", "Đang thực hiện", "Hoàn thành" };
-                if (!validTT.Contains(trangThai)) return "Trạng thái lọc không hợp lệ.";
+                if (!validTT.Contains(loc.TrangThai)) return "Trạng thái lọc không hợp lệ.";
             }
 
-            //kiểm tra Độ ưu tiên
-            if (!string.IsNullOrWhiteSpace(doUuTien))
+            if (!string.IsNullOrWhiteSpace(loc.DoUuTien))
             {
                 string[] validDU = { "Bình thường", "Gấp", "Rất gấp" };
-                if (!validDU.Contains(doUuTien)) return "Độ ưu tiên lọc không hợp lệ.";
+                if (!validDU.Contains(loc.DoUuTien)) return "Độ ưu tiên lọc không hợp lệ.";
             }
 
-            return null; 
+            return null;
+        }
+
+        public DataTable LocCongViec(LocCongViecDTO loc)
+        {
+            // Làm sạch dữ liệu trực tiếp trong object dto trước khi gửi xuống DAL
+            loc.TuKhoa = string.IsNullOrWhiteSpace(loc.TuKhoa) ? null : loc.TuKhoa.Trim();
+            loc.TrangThai = string.IsNullOrWhiteSpace(loc.TrangThai) ? null : loc.TrangThai.Trim();
+            loc.DoUuTien = string.IsNullOrWhiteSpace(loc.DoUuTien) ? null : loc.DoUuTien.Trim();
+
+            return dal.LocCongViec(loc);
         }
 
         public string ValidateThongKe(string maDA)
@@ -50,17 +58,7 @@ namespace DoAn1.BUS
             if (string.IsNullOrWhiteSpace(maDA)) return "Vui lòng chọn một dự án để thống kê.";
             return null;
         }
-
-        public DataTable LocCongViec(string tuKhoa, string trangThai, string doUuTien)
-        {
-            // Làm sạch dữ liệu trước khi gửi xuống DAL
-            string tk = string.IsNullOrWhiteSpace(tuKhoa) ? null : tuKhoa.Trim();
-            string tt = string.IsNullOrWhiteSpace(trangThai) ? null : trangThai.Trim();
-            string du = string.IsNullOrWhiteSpace(doUuTien) ? null : doUuTien.Trim();
-
-            return dal.LocCongViec(tk, tt, du);
-        }
-
+                
         public ThongkeDTO LayThongKe(string maDA)
         {
             if (string.IsNullOrEmpty(maDA))

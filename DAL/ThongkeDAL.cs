@@ -13,11 +13,10 @@ namespace DoAn1.DAL
     {
         string conString = DbConnection.StrCon;
 
-        public DataTable LocCongViec(string tuKhoa, string trangThai, string doUuTien)
+        public DataTable LocCongViec(LocCongViecDTO loc)
         {
             using (SqlConnection con = new SqlConnection(conString))
             {
-                //sử dụng LEFT JOIN để lấy hết công việc, việc nào chưa phân công thì maNV sẽ bị NULL
                 string sql = @"SELECT cv.maCV, cv.tenCV, cv.moTa, cv.thoiHan, cv.doUuTien, 
                               cv.trangThai, cv.ptramHoanThanh, cv.maDA, cv.nguoiTao, 
                               cv.ngayTao, cv.ngayCapNhat, pc.maNV 
@@ -25,17 +24,18 @@ namespace DoAn1.DAL
                        LEFT JOIN PhanCong pc ON cv.maCV = pc.maCV
                        WHERE 1=1";
 
-                //tìm kiếm nâng cao theo: Tên công việc, Mã công việc, hoặc Mã nhân viên được phân công
-                if (!string.IsNullOrEmpty(tuKhoa))
+                // Kiểm tra dữ liệu thông qua đối tượng dto
+                if (!string.IsNullOrEmpty(loc.TuKhoa))
                     sql += " AND (cv.tenCV LIKE @tuKhoa OR cv.maCV LIKE @tuKhoa OR pc.maNV LIKE @tuKhoa)";
 
-                if (!string.IsNullOrEmpty(trangThai)) sql += " AND cv.trangThai = @tt";
-                if (!string.IsNullOrEmpty(doUuTien)) sql += " AND cv.doUuTien = @du";
+                if (!string.IsNullOrEmpty(loc.TrangThai)) sql += " AND cv.trangThai = @tt";
+                if (!string.IsNullOrEmpty(loc.DoUuTien)) sql += " AND cv.doUuTien = @du";
 
                 SqlCommand cmd = new SqlCommand(sql, con);
-                if (!string.IsNullOrEmpty(tuKhoa)) cmd.Parameters.AddWithValue("@tuKhoa", "%" + tuKhoa + "%");
-                if (!string.IsNullOrEmpty(trangThai)) cmd.Parameters.AddWithValue("@tt", trangThai);
-                if (!string.IsNullOrEmpty(doUuTien)) cmd.Parameters.AddWithValue("@du", doUuTien);
+
+                if (!string.IsNullOrEmpty(loc.TuKhoa)) cmd.Parameters.AddWithValue("@tuKhoa", "%" + loc.TuKhoa + "%");
+                if (!string.IsNullOrEmpty(loc.TrangThai)) cmd.Parameters.AddWithValue("@tt", loc.TrangThai);
+                if (!string.IsNullOrEmpty(loc.DoUuTien)) cmd.Parameters.AddWithValue("@du", loc.DoUuTien);
 
                 SqlDataAdapter da = new SqlDataAdapter(cmd);
                 DataTable dt = new DataTable();

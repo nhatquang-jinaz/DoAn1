@@ -94,7 +94,6 @@ namespace DoAn1.DAL
                        ptramHoanThanh = @ptram, 
                        maDA = @mada, 
                        nguoiTao = @nt, 
-                       ngayTao = GETDATE(),
                        ngayCapNhat = GETDATE() 
                        WHERE maCV = @ma";
 

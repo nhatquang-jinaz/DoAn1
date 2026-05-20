@@ -20,11 +20,11 @@ namespace DoAn1
         {
             InitializeComponent();
         }
-        private void LoadDataGrid(string tuKhoa, string trangThai, string doUuTien)
+        private void LoadDataGrid(LocCongViecDTO loc)
         {
             try
             {
-                DataTable dt = busTK.LocCongViec(tuKhoa, trangThai, doUuTien);
+                DataTable dt = busTK.LocCongViec(loc);
                 dgvKQloc.DataSource = dt;
 
                 // Thực hiện đổi tên hiển thị cho toàn bộ các cột đổ về từ bảng CongViec + PhanCong
@@ -51,18 +51,18 @@ namespace DoAn1
         }
         private void frmTK_Load(object sender, EventArgs e)
         {
-            LoadDataGrid("", "", "");// Load toàn bộ dữ liệu
-            // Nạp dữ liệu ComboBox Lọc
+            LoadDataGrid(new LocCongViecDTO());//load toàn bộ dữ liệu
+            //nạp dữ liệu ComboBox Lọc
             cboTTloc.Items.AddRange(new string[] { "Chưa thực hiện", "Đang thực hiện", "Hoàn thành" });
             cboDoUTloc.Items.AddRange(new string[] { "Bình thường", "Gấp", "Rất gấp" });
 
-            // Nạp danh sách dự án vào cboDuAn (phần Thống kê)
+            //nạp danh sách dự án vào cboDuAn (phần Thống kê)
             cboChonduan3.DataSource = busDA.LayDanhSach();
             cboChonduan3.DisplayMember = "tenDA";
             cboChonduan3.ValueMember = "maDA";
             cboChonduan3.SelectedIndex = -1;
 
-            // Thiết lập ProgressBar
+            //thiết lập ProgressBar
             prgTiendo.Minimum = 0;
             prgTiendo.Maximum = 100;
             prgTiendo.Value = 0;
@@ -70,18 +70,25 @@ namespace DoAn1
 
         private void btnLoc_Click(object sender, EventArgs e)
         {
-            string tuKhoa = txtTKL.Text;
-            string tt = cboTTloc.Text;
-            string du = cboDoUTloc.Text;
+            
+            //đóng gói dữ liệu thu thập được từ giao diện vào đối tượng DTO
+            LocCongViecDTO loc = new LocCongViecDTO
+            {
+                TuKhoa = txtTKL.Text,
+                TrangThai = cboTTloc.Text,
+                DoUuTien = cboDoUTloc.Text
+            };
 
-            string check = busTK.ValidateLoc(tuKhoa, tt, du);
+            //gọi hàm xử lý Validate kiểm tra nghiệp vụ trên tầng BUS
+            string check = busTK.ValidateLoc(loc);
             if (check != null)
             {
                 MessageBox.Show(check, "Thông báo");
                 return;
             }
 
-            LoadDataGrid(tuKhoa, tt, du); //gọi hàm nạp theo điều kiện lọc
+            //gọi hàm tải lưới kết quả theo object DTO vừa tạo
+            LoadDataGrid(loc);
         }
 
         private void btnXoaloc_Click(object sender, EventArgs e)
@@ -89,14 +96,14 @@ namespace DoAn1
             txtTKL.Clear();
             cboTTloc.SelectedIndex = -1;
             cboDoUTloc.SelectedIndex = -1;
-            LoadDataGrid("", "", ""); // Load lại toàn bộ
+            LoadDataGrid(new LocCongViecDTO()); //load lại toàn bộ
         }
 
         private void btnThongke_Click(object sender, EventArgs e)
         {
             string maDA = cboChonduan3.SelectedValue?.ToString();
 
-            // Gọi Validate
+            //gọi Validate
             string check = busTK.ValidateThongKe(maDA);
             if (check != null)
             {
