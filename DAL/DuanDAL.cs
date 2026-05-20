@@ -75,8 +75,16 @@ namespace DoAn1.DAL
         {
             using (SqlConnection con = new SqlConnection(conString))
             {
-                SqlCommand cmd = new SqlCommand("DELETE FROM DuAn WHERE maDA=@ma", con);
+
+                string sql = @"
+                        DELETE FROM TienDo WHERE maCV IN (SELECT maCV FROM CongViec WHERE maDA = @ma);
+                        DELETE FROM PhanCong WHERE maCV IN (SELECT maCV FROM CongViec WHERE maDA = @ma);
+                        DELETE FROM CongViec WHERE maDA = @ma;
+                        DELETE FROM DuAn WHERE maDA = @ma;";
+
+                SqlCommand cmd = new SqlCommand(sql, con);
                 cmd.Parameters.AddWithValue("@ma", maDA);
+
                 con.Open();
                 return cmd.ExecuteNonQuery() > 0;
             }
